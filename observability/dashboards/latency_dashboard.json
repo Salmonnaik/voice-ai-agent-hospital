@@ -1,0 +1,31 @@
+{
+  "title": "Voice AI — Latency Pipeline",
+  "uid": "voice-ai-latency",
+  "panels": [
+    {
+      "title": "Turn Latency p95 (target <450ms)",
+      "type": "timeseries",
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum(rate(voice_turn_latency_ms_bucket[5m])) by (le, lang))",
+          "legendFormat": "p95 {{lang}}"
+        }
+      ]
+    },
+    {
+      "title": "LLM TTFT p95",
+      "type": "timeseries",
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum(rate(llm_time_to_first_token_ms_bucket[5m])) by (le, model))",
+          "legendFormat": "{{model}}"
+        }
+      ]
+    },
+    {
+      "title": "Active Sessions",
+      "type": "stat",
+      "targets": [{"expr": "sum(active_sessions_total)"}]
+    }
+  ]
+}

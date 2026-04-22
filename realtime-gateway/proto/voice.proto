@@ -1,0 +1,83 @@
+syntax = "proto3";
+package voice;
+
+service VoiceOrchestrator {
+  // Bidirectional streaming: client sends audio chunks, server sends TTS audio
+  rpc ProcessCall (stream CallEvent) returns (stream AudioResponse);
+}
+
+message CallEvent {
+  string type = 1;          // SESSION_INIT | AUDIO_CHUNK | UTTERANCE_END | BARGE_IN
+  string call_id = 2;
+  bytes audio = 3;          // PCM16 audio bytes (for AUDIO_CHUNK)
+  string lang = 4;          // en | hi | ta
+  int64 timestamp_ms = 5;
+}
+
+message AudioResponse {
+  bytes audio = 1;          // synthesized TTS audio chunk (PCM16 or MP3)
+  string type = 2;          // AUDIO_CHUNK | STREAM_END | BARGE_IN_ACK
+  int64 timestamp_ms = 3;
+}
+
+// Scheduler service
+service SchedulerService {
+  rpc GetAvailableSlots (SlotQuery) returns (SlotList);
+  rpc HoldSlot (HoldRequest) returns (HoldResponse);
+  rpc ConfirmBooking (ConfirmRequest) returns (BookingResult);
+  rpc CancelBooking (CancelRequest) returns (CancelResult);
+}
+
+message SlotQuery {
+  string doctor_id = 1;
+  string after_time = 2;    // ISO8601
+  int32 count = 3;
+}
+
+message SlotList {
+  repeated Slot slots = 1;
+}
+
+message Slot {
+  string id = 1;
+  string doctor_id = 2;
+  string doctor_name = 3;
+  string start_time = 4;    // ISO8601
+  string end_time = 5;
+  string status = 6;
+}
+
+message HoldRequest {
+  string doctor_id = 1;
+  string preferred_time = 2;
+  string session_id = 3;
+}
+
+message HoldResponse {
+  bool success = 1;
+  Slot held_slot = 2;
+  repeated Slot alternatives = 3;  // populated on conflict
+}
+
+message ConfirmRequest {
+  string slot_id = 1;
+  string patient_id = 2;
+  string session_id = 3;
+}
+
+message BookingResult {
+  bool success = 1;
+  Slot slot = 2;
+  string confirmation_code = 3;
+  string error = 4;
+}
+
+message CancelRequest {
+  string appointment_id = 1;
+  string patient_id = 2;
+}
+
+message CancelResult {
+  bool success = 1;
+  string error = 2;
+}

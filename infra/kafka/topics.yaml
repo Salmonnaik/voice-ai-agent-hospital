@@ -1,0 +1,17 @@
+topics:
+  - name: outbound.calls
+    partitions: 8
+    replication_factor: 1
+    config:
+      retention.ms: 86400000
+      max.message.bytes: 1048576
+  - name: session.events
+    partitions: 16
+    replication_factor: 1
+    config:
+      retention.ms: 3600000
+  - name: audit.logs
+    partitions: 4
+    replication_factor: 1
+    config:
+      retention.ms: 2592000000

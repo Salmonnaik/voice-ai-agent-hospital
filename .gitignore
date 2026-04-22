@@ -1,0 +1,36 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+dist/
+*.egg-info/
+.mypy_cache/
+.ruff_cache/
+
+# Node
+node_modules/
+dist/
+*.js.map
+
+# Environment
+.env
+.env.local
+
+# Docker
+*.log
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# Models (large binary files)
+*.onnx
+*.bin
+*.safetensors
+models/
+
+# DB / cache
+*.db
+*.sqlite
